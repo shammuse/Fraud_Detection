@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection Prediction</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const payload = {
+                user_id: document.getElementById('user_id').value,
+                signup_time: document.getElementById('signup_time').value,
+                purchase_time: document.getElementById('purchase_time').value,
+                purchase_value: parseFloat(document.getElementById('purchase_value').value),
+                source: document.getElementById('source').value,
+                browser: document.getElementById('browser').value,
+                sex: document.getElementById('sex').value,
+                age: parseInt(document.getElementById('age').value),
+                country: document.getElementById('country').value
+            };
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            const predictionResult = document.getElementById('prediction_result');
+            if (response.ok) {
+                predictionResult.innerHTML = `<div class="alert alert-success" role="alert">${result.message}</div>`;
+            } else {
+                predictionResult.innerHTML = `<div class="alert alert-danger" role="alert">Error: ${result.error}</div>`;
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #80deea); /* Gradient background */
+        }
+        .form-container {
+            max-width: 800px; /* Increased width for better layout */
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.95; /* Slightly transparent */
+        }
+        h1 {
+            color: rgb(61, 105, 153);
+            font-weight: 700;
+        }
+        h5 {
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: rgb(61, 105, 153);
+            border-color: rgb(61, 105, 153);
+        }
+        .btn-primary:hover {
+            background-color: rgb(50, 85, 122);
+            border-color: rgb(50, 85, 122);
+        }
+        .prediction-title {
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: rgb(61, 105, 153);
+        }
+        .prediction-result {
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Fraud Detection Prediction</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6 form-container">
+                <form onsubmit="submitForm(event)">
+                    <div class="form-group">
+                        <label for="user_id">User ID:</label>
+                        <input type="text" id="user_id" class="form-control" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="signup_time">Signup Time:</label>
+                            <input type="datetime-local" id="signup_time" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="purchase_time">Purchase Time:</label>
+                            <input type="datetime-local" id="purchase_time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchase_value">Purchase Value:</label>
+                        <input type="number" id="purchase_value" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="source">Source:</label>
+                        <select id="source" class="form-control" required>
+                            <option value="Direct">Direct</option>
+                            <option value="SEO">SEO</option>
+                            <option value="Website">Website</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="browser">Browser:</label>
+                        <select id="browser" class="form-control" required>
+                            <option value="Chrome">Chrome</option>
+                            <option value="Firefox">Firefox</option>
+                            <option value="Safari">Safari</option>
+                            <option value="IE">IE</option>
+                            <option value="Opera">Opera</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="sex">Sex:</label>
+                            <select id="sex" class="form-control" required>
+                                <option value="" disabled selected>Select your option</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="age">Age:</label>
+                            <input type="number" id="age" class="form-control" required min="0" max="120">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country:</label>
+                        <input type="text" id="country" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                </form>
+            </div>
+            <div class="col-md-4 offset-md-1 form-container" style="background-color: white;">
+                <div class="prediction-title">Fraud Detection Prediction</div>
+                <div id="prediction_result" class="prediction-result"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
