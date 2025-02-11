@@ -139,6 +139,8 @@ env.bak/
 venv.bak/
 saved_models/
 .saved_models/
+logs/
+.logs/
 
 # Spyder project settings
 .spyderproject
